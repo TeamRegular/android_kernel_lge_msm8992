@@ -55,6 +55,7 @@ int ime_stat = 0;
 int quick_cover_status = 0;
 int knock_mode = 0;
 int mfts_mode = 0;
+int lpwg_status = 0;
 
 struct timeval ex_debug[EX_PROFILE_MAX];
 bool ghost_detection = 0;
@@ -2819,6 +2820,7 @@ static ssize_t store_lpwg_notify(struct i2c_client *client,
 		case 1:
 			touch_device_func->lpwg(client,
 					LPWG_ENABLE, value[0], NULL);
+			lpwg_status = (value[0]) ? 1 : 0;
 
 			knock_mode =
 				(ts->pdata->role->use_security_mode)
@@ -2878,6 +2880,12 @@ static ssize_t store_lpwg_notify(struct i2c_client *client,
 	}
 	return count;
 }
+
+static ssize_t show_lpwg_notify(struct i2c_client *client, char *buf)
+{
+	return sprintf(buf, "%d\n", lpwg_status);
+}
+
 /* store_keyguard_info
  *
  * This function is related with Keyguard in framework.
@@ -3117,7 +3125,7 @@ static LGE_TOUCH_ATTR(fw_upgrade, S_IRUGO | S_IWUSR,
 		show_upgrade, store_upgrade);
 static LGE_TOUCH_ATTR(lpwg_data,
 		S_IRUGO | S_IWUSR, show_lpwg_data, store_lpwg_data);
-static LGE_TOUCH_ATTR(lpwg_notify, S_IRUGO | S_IWUSR, NULL, store_lpwg_notify);
+static LGE_TOUCH_ATTR(lpwg_notify, S_IRUGO | S_IWUSR, show_lpwg_notify, store_lpwg_notify);
 static LGE_TOUCH_ATTR(keyguard, S_IRUGO | S_IWUSR, NULL, store_keyguard_info);
 static LGE_TOUCH_ATTR(ime_status, S_IRUGO | S_IWUSR,
 		show_ime_drumming_status, store_ime_drumming_status);
